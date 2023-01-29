@@ -1,8 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response, status
 from fastapi.encoders import jsonable_encoder
 
-from .database import add_task, retrieve_tasks
-from .models import Task
+from .database import add_task, delete_task, retrieve_tasks, update_task
+from .models import FullTask, Task
 
 
 app = FastAPI()
@@ -14,13 +14,34 @@ async def hello():
 
 
 @app.get("/tasks/")
-async def tasks_view() -> list[Task]:
+async def tasks_view() -> list[FullTask]:
     tasks = await retrieve_tasks()
     return tasks
 
 
-@app.post("/tasks/add/")
+@app.post("/tasks/")
 async def add_task_view(task: Task) -> Task:
     task_data = jsonable_encoder(task)
     new_task = await add_task(task_data)
     return new_task
+
+
+@app.put("/tasks/{task_id}")
+async def update_task_view(task_id: str, task: Task, response: Response) -> dict:
+    # TODO replace Task -> UpdateTask with all optional fields
+    update_status = await update_task(task_id, task.dict())
+    if update_status.updated:
+        return {"info": update_status.message}
+
+    response.status_code = status.HTTP_404_NOT_FOUND
+    return {"error": update_status.message}
+
+
+@app.delete("/tasks/{task_id}")
+async def delete_task_view(task_id: str, response: Response) -> dict:
+    delete_status = await delete_task(task_id)
+    if delete_status.deleted:
+        return {"info": delete_status.message}
+
+    response.status_code = status.HTTP_404_NOT_FOUND
+    return {"error": delete_status.message}

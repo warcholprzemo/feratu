@@ -20,3 +20,7 @@ class Task(BaseModel):
                 "done": True,
             }
         }
+
+
+class FullTask(Task):
+    id: str
