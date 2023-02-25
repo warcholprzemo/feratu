@@ -2,7 +2,7 @@ from fastapi import FastAPI, Response, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 
-from .database import add_task, delete_task, retrieve_tasks, update_task
+from .database import add_task, delete_task, get_task, retrieve_tasks, update_task
 from .models import FullTask, Task
 
 
@@ -35,6 +35,12 @@ async def add_task_view(task: Task) -> Task:
     task_data = jsonable_encoder(task)
     new_task = await add_task(task_data)
     return new_task
+
+
+@app.get("/tasks/{task_id}")
+async def get_task_view(task_id: str) -> Task:
+    task = await get_task(task_id)
+    return task
 
 
 @app.put("/tasks/{task_id}")

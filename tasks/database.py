@@ -48,6 +48,11 @@ async def add_task(task_data: dict) -> dict:
     return task_helper(new_task)
 
 
+async def get_task(task_id: str) -> dict:
+    task = await tasks_collection.find_one({"_id": ObjectId(task_id)})
+    return task_helper(task)
+
+
 async def update_task(task_id: str, task_data: dict) -> UpdateStatus:
     update_result = await tasks_collection.update_one(
         {"_id": ObjectId(task_id)}, {"$set": task_data}
