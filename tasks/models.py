@@ -22,5 +22,12 @@ class Task(BaseModel):
         }
 
 
+class UpdateTask(BaseModel):
+    title: str
+    description: str
+    done: bool
+    finished: datetime | None = None
+
+
 class FullTask(Task):
     id: str

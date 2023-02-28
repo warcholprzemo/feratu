@@ -1,9 +1,11 @@
+import datetime
+
 from fastapi import FastAPI, Response, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 
 from .database import add_task, delete_task, get_task, retrieve_tasks, update_task
-from .models import FullTask, Task
+from .models import FullTask, Task, UpdateTask
 
 
 app = FastAPI()
@@ -44,11 +46,19 @@ async def get_task_view(task_id: str) -> Task:
 
 
 @app.put("/tasks/{task_id}")
-async def update_task_view(task_id: str, task: Task, response: Response) -> dict:
-    # TODO replace Task -> UpdateTask with all optional fields
-    update_status = await update_task(task_id, task.dict())
+async def update_task_view(task_id: str, task: UpdateTask, response: Response) -> dict:
+    task_data = task.dict()
+
+    if task.done:
+        now = datetime.datetime.now()
+        task_data["finished"] = now
+    else:
+        task_data["finished"] = None
+
+    update_status = await update_task(task_id, task_data)
+
     if update_status.updated:
-        return {"info": update_status.message}
+        return {"info": update_status.message, "finished": task_data["finished"]}
 
     response.status_code = status.HTTP_404_NOT_FOUND
     return {"error": update_status.message}
