@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class Task(BaseModel):
-    created: datetime
+    created: datetime | None = None
     finished: datetime | None = None
     title: str
     description: str = ""

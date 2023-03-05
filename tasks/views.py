@@ -35,6 +35,9 @@ async def tasks_view() -> list[FullTask]:
 @app.post("/tasks/")
 async def add_task_view(task: Task) -> Task:
     task_data = jsonable_encoder(task)
+    if not task.created:
+        task_data["created"] = datetime.datetime.now()
+
     new_task = await add_task(task_data)
     return new_task
 
