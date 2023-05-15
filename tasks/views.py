@@ -1,4 +1,5 @@
 import datetime
+import os
 
 from fastapi import FastAPI, Response, status
 from fastapi.encoders import jsonable_encoder
@@ -11,6 +12,8 @@ from .models import FullTask, Task, UpdateTask
 app = FastAPI()
 
 origins = ["http://localhost:5173"]
+FRONTEND_DOMAIN = os.getenv("FRONTEND_DOMAIN")
+origins.append(FRONTEND_DOMAIN)
 
 app.add_middleware(
     CORSMiddleware,
@@ -57,6 +60,9 @@ async def update_task_view(task_id: str, task: UpdateTask, response: Response) -
         task_data["finished"] = now
     else:
         task_data["finished"] = None
+
+    if task.comments is None:
+        task_data.pop("comments")
 
     update_status = await update_task(task_id, task_data)
 

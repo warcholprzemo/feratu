@@ -4,9 +4,11 @@ from dataclasses import dataclass
 import motor.motor_asyncio
 from bson.objectid import ObjectId
 
-# MONGO_DETAILS = "mongodb://mongoservice:27017"
-MONGODB_PASSWORD = os.getenv('MONGODB_PASSWORD')
+
+MONGODB_PASSWORD = os.getenv("MONGODB_PASSWORD")
 MONGO_DETAILS = f"mongodb+srv://warcholprzemo:{MONGODB_PASSWORD}@cluster0.6bzyr4c.mongodb.net/?retryWrites=true&w=majority"
+#MONGO_DETAILS = "mongodb://mongoservice:27017"
+
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
 
 database = client.feratu
@@ -34,6 +36,7 @@ def task_helper(task) -> dict:
         "title": task["title"],
         "description": task["description"],
         "done": task["done"],
+        "comments": task.get("comments"),
     }
 
 

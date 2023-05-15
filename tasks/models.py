@@ -3,12 +3,18 @@ from datetime import datetime
 from pydantic import BaseModel
 
 
+class Comment(BaseModel):
+    author: str
+    message: str
+
+
 class Task(BaseModel):
     created: datetime | None = None
     finished: datetime | None = None
     title: str
     description: str = ""
     done: bool = False
+    comments: list[Comment] | None = None
 
     class Config:
         schema_extra = {
@@ -18,6 +24,12 @@ class Task(BaseModel):
                 "title": "Buy new bookshelf",
                 "description": "Bought in Agata Meble",
                 "done": True,
+                "comments": [
+                    {
+                        "author": "ziutek",
+                        "message": "good choice",
+                    }
+                ],
             }
         }
 
@@ -27,6 +39,7 @@ class UpdateTask(BaseModel):
     description: str
     done: bool
     finished: datetime | None = None
+    comments: list[Comment] | None = None
 
 
 class FullTask(Task):
