@@ -64,7 +64,9 @@ async def update_task_view(task_id: str, task: UpdateTask, response: Response) -
     if task.comments is None:
         task_data.pop("comments")
 
-    update_status = await update_task(task_id, task_data)
+    new_comment = task_data.pop("new_comment")
+
+    update_status = await update_task(task_id, task_data, new_comment)
 
     if update_status.updated:
         return {"info": update_status.message, "finished": task_data["finished"]}

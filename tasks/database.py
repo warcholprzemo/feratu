@@ -7,7 +7,7 @@ from bson.objectid import ObjectId
 
 MONGODB_PASSWORD = os.getenv("MONGODB_PASSWORD")
 MONGO_DETAILS = f"mongodb+srv://warcholprzemo:{MONGODB_PASSWORD}@cluster0.6bzyr4c.mongodb.net/?retryWrites=true&w=majority"
-#MONGO_DETAILS = "mongodb://mongoservice:27017"
+# MONGO_DETAILS = "mongodb://mongoservice:27017"
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DETAILS)
 
@@ -58,7 +58,13 @@ async def get_task(task_id: str) -> dict:
     return task_helper(task)
 
 
-async def update_task(task_id: str, task_data: dict) -> UpdateStatus:
+async def update_task(task_id: str, task_data: dict, new_comment: dict) -> UpdateStatus:
+    if new_comment:
+        original_task = await get_task(task_id)
+        comments = original_task["comments"] or []
+        comments.append(new_comment)
+        task_data["comments"] = comments
+
     update_result = await tasks_collection.update_one(
         {"_id": ObjectId(task_id)}, {"$set": task_data}
     )

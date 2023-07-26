@@ -40,6 +40,7 @@ class UpdateTask(BaseModel):
     done: bool
     finished: datetime | None = None
     comments: list[Comment] | None = None
+    new_comment: Comment | None = None
 
 
 class FullTask(Task):
